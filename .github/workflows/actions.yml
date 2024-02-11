@@ -88,7 +88,7 @@ jobs:
           run: aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
         
         - name: Deploy Helm
-          uses: z1digitalstudio/eks-helm-deploy-action@v2
+          uses: bitovi/github-actions-deploy-eks-helm@v1.2.8
           with:
             aws-access-key-id: ${{ secrets.AWS_ACCESS__KEY_ID }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
