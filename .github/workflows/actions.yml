@@ -55,13 +55,15 @@ jobs:
         steps:
             - name: Code Checkout
               uses: actions?checkout@v4
+
             - name: Build and upload image to ECR
-              uses: appleboy/docker-ecr-action@master
+              uses: vitr/actions-build-and-upload-to-ecs@master
               with:
                 access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 region: ${{ env.AWS_REGION }}
-                repository: ${{ env.ECR_REPOSITORY }}
+                account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+                repo: ${{ env.ECR_REPOSITORY }}
                 tag: latest,${{ github.run_number }}
                 daemon_off: false
                 dockerfile: ./Dockerfile
