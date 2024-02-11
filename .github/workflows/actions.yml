@@ -54,7 +54,7 @@ jobs:
         needs: Testing
         steps:
             - name: Code Checkout
-              uses: actions?checkout@v4
+              uses: actions/checkout@v4
 
             - name: Build and upload image to ECR
               uses: vitr/actions-build-and-upload-to-ecs@master
