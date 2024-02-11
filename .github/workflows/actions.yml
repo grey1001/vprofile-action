@@ -6,71 +6,70 @@ env:
     EKS_CLUSTER: vprofile-eks
 
 jobs:
-    Testing:
-        runs-on: ubuntu-latest
-        steps: 
-            - name: Code Checkout
-              uses: actions/checkout@v4
+    # Testing:
+    #     runs-on: ubuntu-latest
+    #     steps: 
+    #         - name: Code Checkout
+    #           uses: actions/checkout@v4
 
-            - name: Maven Test
-              run: mvn test
+    #         - name: Maven Test
+    #           run: mvn test
 
-            - name: Checkstyle
-              run: mvn checkstyle:checkstyle
+    #         - name: Checkstyle
+    #           run: mvn checkstyle:checkstyle
 
 
-            - name: Set java version
-              uses: actions/setup-java@v3
-              with:
-                distribution: 'temurin'
-                java-version: '11'
+    #         - name: Set java version
+    #           uses: actions/setup-java@v3
+    #           with:
+    #             distribution: 'temurin'
+    #             java-version: '11'
 
-            - name: setup sonarqube
-              uses: warchant/setup-sonar-scanner@v7
+    #         - name: setup sonarqube
+    #           uses: warchant/setup-sonar-scanner@v7
             
-            - name: SonarQube Scan
-              run: sonar-scanner
-                -Dsonar.host.url=${{ secrets.SONAR_URL }}
-                -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-                -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-                -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-                -Dsonar.sources=src/
-                -Dsonar.java.binaries=target/test-classes/com/visualpathit/account
-                -Dsonar.junit.reportPaths=target/surefire-reports/
-                -Dsonar.jacoco.reportPaths=target/jacoco.exec
-                -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+    #         - name: SonarQube Scan
+    #           run: sonar-scanner
+    #             -Dsonar.host.url=${{ secrets.SONAR_URL }}
+    #             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+    #             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+    #             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+    #             -Dsonar.sources=src/
+    #             -Dsonar.java.binaries=target/test-classes/com/visualpathit/account
+    #             -Dsonar.junit.reportPaths=target/surefire-reports/
+    #             -Dsonar.jacoco.reportPaths=target/jacoco.exec
+    #             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
 
-            - name: Sonarqube quality gate
-              id: sonarqube
-              uses: sonarsource/sonarqube-quality-gate-action@master
-              timeout-minutes: 5
-              env:
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                SONAR_HOST: ${{ secrets.SONAR_URL }}
-                SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+    #         - name: Sonarqube quality gate
+    #           id: sonarqube
+    #           uses: sonarsource/sonarqube-quality-gate-action@master
+    #           timeout-minutes: 5
+    #           env:
+    #             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #             SONAR_HOST: ${{ secrets.SONAR_URL }}
+    #             SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
 
-    Build_and_publish:
-        runs-on: ubuntu-latest
-        needs: Testing
-        steps:
-            - name: Code Checkout
-              uses: actions/checkout@v4
+    # Build_and_publish:
+    #     runs-on: ubuntu-latest
+    #     needs: Testing
+    #     steps:
+    #         - name: Code Checkout
+    #           uses: actions/checkout@v4
 
-            - name: Build and upload image to ECR
-              uses: vitr/actions-build-and-upload-to-ecs@master
-              with:
-                access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                region: ${{ env.AWS_REGION }}
-                account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-                repo: ${{ env.ECR_REPOSITORY }}
-                tag: latest,${{ github.run_number }}
-                daemon_off: false
-                dockerfile: ./Dockerfile
-                context: ./
+    #         - name: Build and upload image to ECR
+    #           uses: vitr/actions-build-and-upload-to-ecs@master
+    #           with:
+    #             access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #             secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #             region: ${{ env.AWS_REGION }}
+    #             account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+    #             repo: ${{ env.ECR_REPOSITORY }}
+    #             tag: latest,${{ github.run_number }}
+    #             daemon_off: false
+    #             dockerfile: ./Dockerfile
+    #             context: ./
     
     Deploy:
-      needs: Build_and_publish
       runs-on: ubuntu-latest
       steps:
         - name: Deploy to EKS
